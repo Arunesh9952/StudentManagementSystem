@@ -1,0 +1,209 @@
+<div class="dashboard-wrapper">
+
+  <!-- NAVBAR -->
+  <div class="custom-toast" *ngIf="showToast">
+    {{ toastMessage }}
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <b>🎓 Student Management System</b>
+    </div>
+    <div class="navbar-right">
+      <button class="btn-admin" (click)="ViewAdminProfile()">Admin 🤵</button>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+
+    <!-- Welcome -->
+    <div class="welcome-card">
+      <h2>Welcome to Admin Dashboard</h2>
+      <p>Hello <strong>{{ name }}</strong></p>
+    </div>
+<br>
+    <!-- ACTION CARDS -->
+    <div class="cards-row">
+
+      <div class="card">
+        <div class="card-icon">➕</div>
+        <button (click)="showAddForm = !showAddForm" class="btn-card">
+          Add Student
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">👨‍🎓</div>
+        <button (click)="getStudents()" class="btn-card">
+          View Students
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ADD STUDENT FORM -->
+    <div *ngIf="showAddForm" class="form-box">
+
+      <h3>Add Student</h3>
+
+    <form #studentForm="ngForm" (ngSubmit)="onSubmit(studentForm)">
+
+  <!-- Name -->
+  <input type="text"
+         name="name"
+         [(ngModel)]="student.name"
+         #name="ngModel"
+         placeholder="Name"
+         required>
+  <small class="error" *ngIf="name.invalid && name.touched">
+    Name is required
+  </small>
+
+  <!-- Age -->
+  <input type="number"
+         name="age"
+         [(ngModel)]="student.age"
+         #age="ngModel"
+         placeholder="Age"
+         required
+         min="1">
+  <small class="error" *ngIf="age.invalid && age.touched">
+    Valid age is required
+  </small>
+
+  <!-- Department Dropdown -->
+<select 
+  class="form-control"
+  name="department"
+  [(ngModel)]="student.department"
+  #department="ngModel"
+  required>
+
+  <option value="">Select Department</option>
+  <option value="IT">IT</option>
+  <option value="CSE">CSE</option>
+  <option value="ECE">ECE</option>
+  <option value="EEE">EEE</option>
+  <option value="MECH">MECH</option>
+  <option value="CIVIL">CIVIL</option>
+</select>
+
+<small class="error" *ngIf="department.invalid && department.touched">
+  Department is required
+</small>
+  <br>
+  <br>
+
+  <!-- Email (Gmail Only) -->
+  <input type="email"
+         name="email"
+         [(ngModel)]="student.email"
+         #email="ngModel"
+         placeholder="Email"
+         required
+         pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$">
+  <small class="error" *ngIf="email.errors?.['required'] && email.touched">
+    Email is required
+  </small>
+  <small class="error" *ngIf="email.errors?.['pattern'] && email.touched">
+    Only Gmail address allowed (example@gmail.com)
+  </small>
+
+  <!-- Phone (10 digits) -->
+  <input type="text"
+         name="phone"
+         [(ngModel)]="student.phone"
+         #phone="ngModel"
+         placeholder="Phone"
+         required
+         pattern="^[0-9]{10}$"
+         maxlength="10">
+  <small class="error" *ngIf="phone.errors?.['required'] && phone.touched">
+    Phone number is required
+  </small>
+  <small class="error" *ngIf="phone.errors?.['pattern'] && phone.touched">
+    Phone must be exactly 10 digits
+  </small>
+
+<input type="text" name="city" [(ngModel)]="student.city" placeholder="City" required>
+
+<input type="text" name="state" [(ngModel)]="student.state" placeholder="State" required>
+
+  <!-- Date of Birth -->
+  <input type="date"
+         name="dob"
+         [(ngModel)]="student.dob"
+         #dob="ngModel"
+         required>
+  <small class="error" *ngIf="dob.invalid && dob.touched">
+    Date of Birth is required
+  </small>
+
+  <!-- Submit -->
+  <button type="submit"
+          [disabled]="studentForm.invalid">
+    Save
+  </button>
+
+</form>
+
+    </div>
+
+    <!-- STUDENT TABLE -->
+    <div *ngIf="showTable && students.length > 0" class="table-box">
+
+      <h3>Student List</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Department</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Date of Birth</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let s of paginatedStudents">
+            <td>{{ s.name }}</td>
+            <td>{{ s.age }}</td>
+            <td>{{ s.department }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.phone }}</td>
+            <td>{{ s.city }}</td>
+            <td>{{ s.state }}</td>
+            <td>{{ s.dob | date:'yyyy-MM-dd' }}</td>
+            <td>
+              <button (click)="editStudent(s)">Edit</button>
+              <button (click)="deleteStudent(s.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="students.length > 3">
+
+        <button (click)="prevPage()" [disabled]="currentPage === 1">
+          Previous
+        </button>
+
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
